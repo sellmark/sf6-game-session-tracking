@@ -9,13 +9,8 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 class PayloadValidator
 {
-    private SerializerInterface $serializer;
-    private ValidatorInterface $validator;
-
-    public function __construct(SerializerInterface $serializer, ValidatorInterface $validator)
+    public function __construct(private readonly SerializerInterface $serializer, private readonly ValidatorInterface $validator)
     {
-        $this->serializer = $serializer;
-        $this->validator = $validator;
     }
 
     public function validate(Request $request, string $type): array

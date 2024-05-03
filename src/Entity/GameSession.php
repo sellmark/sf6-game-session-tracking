@@ -16,7 +16,7 @@ class GameSession
 
     #[ORM\ManyToOne(targetEntity: Player::class)]
     #[ORM\JoinColumn(name: "player_id", referencedColumnName: "id", nullable: true)]
-    public ?Player $player;
+    public ?Player $player = null;
 
     public function __construct(
         #[ORM\Column(type: "string")]

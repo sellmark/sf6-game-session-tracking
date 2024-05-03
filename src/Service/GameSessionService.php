@@ -9,13 +9,8 @@ use Symfony\Contracts\Cache\ItemInterface;
 
 class GameSessionService
 {
-    private EntityManagerInterface $entityManager;
-    private CacheInterface $cache;
-
-    public function __construct(EntityManagerInterface $entityManager, CacheInterface $cache)
+    public function __construct(private readonly EntityManagerInterface $entityManager, private readonly CacheInterface $cache)
     {
-        $this->entityManager = $entityManager;
-        $this->cache = $cache;
     }
 
     public function findOrCreateSession(string $sessionId): GameSession

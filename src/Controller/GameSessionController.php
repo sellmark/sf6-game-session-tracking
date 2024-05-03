@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\DTO\PlayerBindingDTO;
+use App\DTO\PlayerSessionDTO;
 use App\Entity\GameSession;
 use App\Entity\Player;
 use App\Service\GameSessionService;
@@ -15,16 +16,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Uid\Uuid;
 
-#[Route('game/session', name: 'gameSession')]
+#[Route('game/session', name: 'game_session_')]
 class GameSessionController extends AbstractController
 {
     private const UUID_REGEX = "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}";
 
-    private GameSessionService $gameSessionService;
-
-    public function __construct(GameSessionService $gameSessionService)
+    public function __construct(private readonly GameSessionService $gameSessionService)
     {
-        $this->gameSessionService = $gameSessionService;
     }
 
     #[Route('test', name: 'test', methods: ['GET'])]
@@ -33,12 +31,12 @@ class GameSessionController extends AbstractController
         return $this->json(["fine","and", "good"]);
     }
 
-    #[Route('/{sessionId}', name: 'Get', requirements: ['sessionId' => self::UUID_REGEX], methods: ['GET'], stateless: true)]
+    #[Route('/{sessionId}', name: 'get', requirements: ['sessionId' => self::UUID_REGEX], methods: ['GET'], stateless: true)]
     public function getSession(Request $request, string $sessionId): JsonResponse | RedirectResponse
     {
         $session = $this->gameSessionService->findOrCreateSession($sessionId);
         if ($sessionId !== $session->uuid) {
-            return $this->redirectToRoute("gameSessionGet", ["sessionId" => $session->uuid]);
+            return $this->redirectToRoute("game_session_get", ["sessionId" => $session->uuid]);
         }
         return $this->json(data: [
             'sessionId' => $session->id,
@@ -53,7 +51,7 @@ class GameSessionController extends AbstractController
         );
     }
 
-    #[Route('/{sessionId}/bind-player', name: 'bind_player_to_session', methods: ['POST'])]
+    #[Route('/{sessionId}/bind-player', name: 'bind_player', requirements: ['sessionId' => self::UUID_REGEX], methods: ['POST'])]
     public function bindPlayerToSession(
         Request $request,
         PayloadValidator $payloadValidator,
@@ -89,8 +87,9 @@ class GameSessionController extends AbstractController
         }
 
         $session->bindPlayer($player);
+
         $entityManager->flush();
 
-        return $this->json(['playerId' => $player->uuid, "sessionId" => $session->uuid]);
+        return $this->json(new PlayerSessionDTO($player->uuid, $session->uuid));
     }
 }
