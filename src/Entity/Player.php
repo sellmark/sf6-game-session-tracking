@@ -35,8 +35,4 @@ class Player
     {
         $this->trackingIds = array_unique(array_merge($this->trackingIds ?? [], $newTrackingIds));
     }
-
-    public function getSessions(): Collection {
-        return $this->sessions;
-    }
 }

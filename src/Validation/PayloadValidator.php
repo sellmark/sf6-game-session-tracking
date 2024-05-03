@@ -31,6 +31,7 @@ class PayloadValidator
         foreach ($errors as $error) {
             $errorMessages[$error->getPropertyPath()] = $error->getMessage();
         }
+
         return $errorMessages;
     }
 }

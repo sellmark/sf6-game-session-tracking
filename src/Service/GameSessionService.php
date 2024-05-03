@@ -20,7 +20,7 @@ class GameSessionService
 
             $session = $this->entityManager->getRepository(GameSession::class)->findOneBy(['uuid' => $sessionId]);
 
-            if (!$session) {
+            if (!$session || $session->isExpired()) {
                 $session = new GameSession(Uuid::v7()->toRfc4122()); // or recreate with the same ID if necessary
                 $this->entityManager->persist($session);
                 $this->entityManager->flush();

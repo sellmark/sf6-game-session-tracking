@@ -38,6 +38,9 @@ class GameSessionController extends AbstractController
         if ($sessionId !== $session->uuid) {
             return $this->redirectToRoute("game_session_get", ["sessionId" => $session->uuid]);
         }
+
+        //TODO Make it a DTO at return
+        // Use or remove cookie sharing
         return $this->json(data: [
             'sessionId' => $session->id,
             'uuid' => $session->uuid,
@@ -61,18 +64,28 @@ class GameSessionController extends AbstractController
         $validationResult = $payloadValidator->validate($request, PlayerBindingDTO::class);
         if ($validationResult['errors']) {
             $errorResponse = $payloadValidator->createErrorResponse($validationResult['errors']);
+
             return $this->json(['errors' => $errorResponse], JsonResponse::HTTP_BAD_REQUEST);
         }
         /* @var $dto PlayerBindingDTO */
         $dto = $validationResult['dto'];
 
+        //todo Move the code about validating a session and binding a player to GameSessionService
+        // That should return a PlayerSessionDTO
         $session = $entityManager->getRepository(GameSession::class)->findOneBy(['uuid' => $sessionId]);
+        $expiredSession= null;
+
         if (!$session) {
             return $this->json(['message' => 'Session not found'], JsonResponse::HTTP_NOT_FOUND);
         }
 
         if ($session->player) {
             return $this->json(['message' => 'Session already occupied'], JsonResponse::HTTP_BAD_REQUEST);
+        }
+
+        if ($session->isExpired()) {
+            $expiredSession = $session;
+            $session = $this->gameSessionService->findOrCreateSession($sessionId);
         }
 
         $player = null;
@@ -87,6 +100,9 @@ class GameSessionController extends AbstractController
         }
 
         $session->bindPlayer($player);
+        if ($expiredSession) {
+            $expiredSession->bindPlayer($player);
+        }
 
         $entityManager->flush();
 
