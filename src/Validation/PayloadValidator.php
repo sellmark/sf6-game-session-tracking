@@ -19,7 +19,7 @@ class PayloadValidator
         $errors = $this->validator->validate($dto);
 
         if (count($errors) > 0) {
-            return ['dto' => $dto, 'errors' => $errors];
+            return ['errors' => $this->createErrorResponse($errors)];
         }
 
         return ['dto' => $dto, 'errors' => null];

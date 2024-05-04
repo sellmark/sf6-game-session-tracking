@@ -14,9 +14,13 @@ class GameSession
     #[ORM\Column(type: "integer")]
     public readonly int $id;
 
-    #[ORM\ManyToOne(targetEntity: Player::class)]
+    #[ORM\ManyToOne(targetEntity: Player::class, inversedBy: "sessions")]
     #[ORM\JoinColumn(name: "player_id", referencedColumnName: "id", nullable: true)]
     public ?Player $player = null;
+
+    #[ORM\ManyToOne(targetEntity: self::class)]
+    #[ORM\JoinColumn(name: "previous_session_id", referencedColumnName: "id", nullable: true)]
+    public ?GameSession $previousSession = null;
 
     public function __construct(
         #[ORM\Column(type: "string")]
@@ -40,5 +44,9 @@ class GameSession
     {
         $this->player = $player;
     }
-}
 
+    public function getPlayer(): ?Player
+    {
+        return $this->player;
+    }
+}

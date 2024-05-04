@@ -28,10 +28,6 @@ services:
             $normalizers: ['@Symfony\Component\Serializer\Normalizer\ObjectNormalizer']
             $encoders: ['@Symfony\Component\Serializer\Encoder\JsonEncoder']
 
-    Symfony\Component\Serializer\Normalizer\ObjectNormalizer:
-        autowire: true
-        arguments:
-            $propertyAccessor: '@Symfony\Component\PropertyAccess\PropertyAccessorInterface'
 
     Symfony\Component\Serializer\Encoder\JsonEncoder:
         autowire: true

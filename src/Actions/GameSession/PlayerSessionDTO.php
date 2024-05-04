@@ -1,12 +1,15 @@
 <?php
 
-namespace App\DTO;
+namespace App\Actions\GameSession;
 
+use App\Actions\ActionOutput;
 use Symfony\Component\Validator\Constraints as Assert;
 
-readonly class PlayerSessionDTO
+final readonly class PlayerSessionDTO implements ActionOutput
 {
     public function __construct(
+        public int $id,
+
         #[Assert\Uuid]
         #[Assert\NotBlank]
         public string $playerId,
