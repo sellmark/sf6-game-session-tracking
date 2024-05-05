@@ -1,0 +1,13 @@
+###
+GET http://localhost/game/session/018f42fc-cf8f-714f-af94-695a1667ab07
+
+###
+POST http://localhost/game/session/bind-player
+Content-Type: application/json
+
+{
+  "name": "Marek ",
+  "email": "m@sellmark.pl",
+  "uuid": "",
+  "sessionId": "018f42fc-cf8f-714f-af94-695a1667ab07"
+}
