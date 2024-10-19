@@ -19,8 +19,8 @@ RUN apt-get update && apt-get install -y \
     pkg-config \
     libssl-dev
 
-# Install PHP Redis extension
-RUN pecl install redis && docker-php-ext-enable redis
+RUN pecl install redis-5.3.7
+RUN docker-php-ext-enable redis
 
 RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 
@@ -30,15 +30,17 @@ WORKDIR /var/www
 
 COPY . /var/www
 
-
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 RUN mkdir /home/appuser
 RUN chown -R appuser:appuser /home/appuser
 RUN chown -R appuser:appuser /var/www
+
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
 USER appuser
 
-RUN composer install --no-dev --optimize-autoloader
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
 EXPOSE 9000
-CMD ["php-fpm"]
